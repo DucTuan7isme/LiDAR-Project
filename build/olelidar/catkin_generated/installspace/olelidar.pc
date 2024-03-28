@@ -1,0 +1,8 @@
+prefix=/home/robotics/test_ws/install
+
+Name: olelidar
+Description: Description of olelidar
+Version: 3.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

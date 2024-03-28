@@ -1,0 +1,17 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~device_ip" : \b [str] IP addr to receive packet from. min: , default: 192.168.1.122, max: 
+- \b "~device_port" : \b [int] UDP port to receive packet from. min: -2147483648, default: 2368, max: 2147483647
+- \b "~local_ip" : \b [str] loacl IP addr. min: , default: 192.168.1.99, max: 
+- \b "~multiaddr" : \b [str] multiaddr. min: , default: 239.255.0.100, max: 
+- \b "~freq" : \b [double] rotate degree per second min: -std::numeric_limits<double>::infinity(), default: 25.0, max: std::numeric_limits<double>::infinity()
+- \b "~route" : \b [int] rotate degree per second min: -2147483648, default: 2000, max: 2147483647
+- \b "~step" : \b [double] rotate degree per second min: -std::numeric_limits<double>::infinity(), default: 0.225, max: std::numeric_limits<double>::infinity()
+- \b "~frame_id" : \b [str] olelidar min: , default: , max: 
+- \b "~angle_min" : \b [double] angle_min min: 0.0, default: 0.0, max: 360.0
+- \b "~angle_max" : \b [double] angle_max min: 0.0, default: 360.0, max: 360.0
+- \b "~range_min" : \b [double] min range min: 0.1, default: 0.1, max: 20.0
+- \b "~range_max" : \b [double] max range min: 0.1, default: 50.0, max: 50.0
+

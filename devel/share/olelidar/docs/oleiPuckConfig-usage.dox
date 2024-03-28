@@ -1,0 +1,18 @@
+\subsubsection usage Usage
+\verbatim
+<node name="olelidar" pkg="olelidar" type="olelidar">
+  <param name="device_ip" type="str" value="192.168.1.122" />
+  <param name="device_port" type="int" value="2368" />
+  <param name="local_ip" type="str" value="192.168.1.99" />
+  <param name="multiaddr" type="str" value="239.255.0.100" />
+  <param name="freq" type="double" value="25.0" />
+  <param name="route" type="int" value="2000" />
+  <param name="step" type="double" value="0.225" />
+  <param name="frame_id" type="str" value="" />
+  <param name="angle_min" type="double" value="0.0" />
+  <param name="angle_max" type="double" value="360.0" />
+  <param name="range_min" type="double" value="0.1" />
+  <param name="range_max" type="double" value="50.0" />
+</node>
+\endverbatim
+

@@ -1,0 +1,2 @@
+olei_msgs:olelidar
+-DCATKIN_DEVEL_PREFIX=/home/tuan/Downloads/test_ws/devel -DCMAKE_INSTALL_PREFIX=/home/tuan/Downloads/test_ws/install -G Unix Makefiles
