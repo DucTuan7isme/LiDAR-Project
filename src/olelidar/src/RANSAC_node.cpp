@@ -7,7 +7,6 @@
 struct DetectedObject {
     float max_intensity_distance;
     float max_intensity_value;
-    double fitted_radius;
     size_t cluster_size;
     size_t cluster_start_index;
 };
@@ -50,7 +49,7 @@ public:
                     obj.max_intensity_distance = ranges[i];
                     obj.max_intensity_value = max_intensity_value;
                     obj.cluster_size = cluster_size;
-                    obj.cluster_start_index = i;
+                    obj.cluster_start_index = i; 
                     detected_objects.push_back(obj);
                 }
 
@@ -63,14 +62,14 @@ public:
             bool has_cylinder_shape = false;
             for (auto& obj : detected_objects) {
                 if (isCylinderShape(obj)) {
+                    has_cylinder_shape = true;
                     ROS_INFO("Special object at distance %.2f meters with intensity %.2f",
                              obj.max_intensity_distance, obj.max_intensity_value);
-                    has_cylinder_shape = true;
+                    ROS_INFO("Number of points in the cluster: %zu", obj.cluster_size);
                 }
             }
-
             if (!has_cylinder_shape) {
-                ROS_INFO("No special objects detected.");
+                ROS_INFO("Special object detected, but not circular shape.");
             }
         } else  {
             ROS_INFO("No special objects detected.");
@@ -91,6 +90,27 @@ public:
         }
 
         const size_t num_points = cluster_angles.size();
+
+        // Least squares circle fitting
+        Eigen::MatrixXd A(num_points, 3);
+        Eigen::VectorXd b(num_points);
+
+        for (size_t i = 0; i < num_points; ++i) {
+            double x = cluster_distances[i] * std::cos(cluster_angles[i]);
+            double y = cluster_distances[i] * std::sin(cluster_angles[i]);
+
+            A(i, 0) = 2 * x;
+            A(i, 1) = 2 * y;
+            A(i, 2) = -1;
+            b(i) = x * x + y * y;
+        }
+
+        Eigen::Vector3d x = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+
+        // Calculate circle parameters
+        double cx = x(0);
+        double cy = x(1);
+        double radius = std::sqrt(cx * cx + cy * cy - x(2));
 
         // RANSAC parameters
         const int max_iterations = 200;
@@ -128,9 +148,9 @@ public:
             }
 
             // Calculate circle parameters
-            double cx = (ma * mb * (y1 - y3) + mb * (x1 + x2) - ma * (x2 + x3)) / (2 * (mb - ma));
-            double cy = -1 / ma * (cx - (x1 + x2) / 2) + (y1 + y2) / 2;
-            double radius = std::sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
+            cx = (ma * mb * (y1 - y3) + mb * (x1 + x2) - ma * (x2 + x3)) / (2 * (mb - ma));
+            cy = -1 / ma * (cx - (x1 + x2) / 2) + (y1 + y2) / 2;
+            radius = std::sqrt((x1 - cx) * (x1 - cx) + (y1 - cy) * (y1 - cy));
 
             // Count inliers
             size_t inliers = 0;
@@ -150,6 +170,7 @@ public:
         // If no valid circle is found after max_iterations, return false
         return false;
     }
+
 
 private:
     ros::Subscriber lidar_sub;

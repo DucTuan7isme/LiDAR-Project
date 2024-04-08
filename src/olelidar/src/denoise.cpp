@@ -3,26 +3,25 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <deque>
 
 class LidarDenoising {
 public:
-    LidarDenoising() : nh_("~") {
-        sub_ = nh_.subscribe("/front_scan", 1, &LidarDenoising::LidarCallback, this);
+    LidarDenoising() : nh_("~"), num_scans_to_average_(3), k_(5), eps_(0.08) {
+        sub_ = nh_.subscribe("/front_scan", 1, &LidarDenoising::lidarCallback, this);
         pub_ = nh_.advertise<sensor_msgs::LaserScan>("/denoise_node", 1);
     }
 
     // Callback function for the input LaserScan data
-    void LidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
-        sensor_msgs::LaserScan denoised_scan = denoiseScan(*msg);
+    void lidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
+        sensor_msgs::LaserScan smoothed_scan = temporalSmoothing(*msg);
+        sensor_msgs::LaserScan denoised_scan = denoiseScan(smoothed_scan);
         pub_.publish(denoised_scan);
     }
 
     // Denoising algorithm using k-Nearest Neighbor
     sensor_msgs::LaserScan denoiseScan(const sensor_msgs::LaserScan& scan) {
         sensor_msgs::LaserScan denoised_scan = scan;
-
-        // Parameters for k-Nearest Neighbor
-        int k = 10; // Number of nearest neighbors to consider
 
         // Precalculate angle increments
         float angle_increment = scan.angle_increment;
@@ -53,10 +52,10 @@ public:
 
             // Sort distances and select k nearest neighbors
             std::sort(distances.begin(), distances.end());
-            float kth_distance = distances[k - 1];
+            float kth_distance = distances[k_ - 1];
 
             // If the distance to the kth nearest neighbor is greater than epsilon, mark the point as noise
-            if (kth_distance > eps) {
+            if (kth_distance > eps_) {
                 denoised_scan.ranges[i] = std::numeric_limits<float>::quiet_NaN(); // Set as NaN to represent noise
             }
         }
@@ -64,11 +63,42 @@ public:
         return denoised_scan;
     }
 
+    // Temporal smoothing algorithm
+    sensor_msgs::LaserScan temporalSmoothing(const sensor_msgs::LaserScan& scan) {
+        sensor_msgs::LaserScan smoothed_scan = scan;
+
+        // Apply temporal smoothing using moving average
+        std::vector<float> sum(scan.ranges.size(), 0.0);
+        for (size_t i = 0; i < std::min(scan_buffer_.size(), num_scans_to_average_); ++i) {
+            const sensor_msgs::LaserScan& current_scan = scan_buffer_[i];
+            for (size_t j = 0; j < current_scan.ranges.size(); ++j) {
+                sum[j] += current_scan.ranges[j];
+            }
+        }
+
+        // Compute average range values for each point
+        for (size_t i = 0; i < smoothed_scan.ranges.size(); ++i) {
+            smoothed_scan.ranges[i] = sum[i] / std::min(scan_buffer_.size(), num_scans_to_average_);
+        }
+
+        // Update scan buffer with latest scan
+        scan_buffer_.push_back(scan);
+        if (scan_buffer_.size() > num_scans_to_average_) {
+            scan_buffer_.pop_front(); // Remove oldest scan
+        }
+
+        return smoothed_scan;
+    }
+
+
 private:
     ros::NodeHandle nh_;
     ros::Subscriber sub_;
     ros::Publisher pub_;
-    float eps = 0.06; // Epsilon value for denoising
+    size_t num_scans_to_average_;
+    int k_; 
+    float eps_; 
+    std::deque<sensor_msgs::LaserScan> scan_buffer_; 
 };
 
 int main(int argc, char** argv) {

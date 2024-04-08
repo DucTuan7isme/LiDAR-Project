@@ -47,25 +47,26 @@ add_executable(detection_node src/detection_node.cpp)
 target_include_directories(detection_node  PUBLIC ${catkin_INCLUDE_DIRS} src)
 target_link_libraries(detection_node  PUBLIC ${catkin_LIBRARIES} )
 
-add_executable(filtering_node src/filtering_node.cpp)
-target_include_directories(filtering_node  PUBLIC ${catkin_INCLUDE_DIRS} src)
-target_link_libraries(filtering_node  PUBLIC ${catkin_LIBRARIES} )
+add_executable(RANSAC_node src/RANSAC_node.cpp)
+target_include_directories(RANSAC_node  PUBLIC ${catkin_INCLUDE_DIRS} src)
+target_link_libraries(RANSAC_node  PUBLIC ${catkin_LIBRARIES} )
 
 
 add_executable(shape_detection src/shape_detection.cpp)
 target_include_directories(shape_detection   PUBLIC ${catkin_INCLUDE_DIRS} src)
 target_link_libraries(shape_detection   PUBLIC ${catkin_LIBRARIES} )
 
-add_executable(denoise_node src/denoise_node.cpp)
-target_include_directories(denoise_node   PUBLIC ${catkin_INCLUDE_DIRS} src)
-target_link_libraries(denoise_node   PUBLIC ${catkin_LIBRARIES} )
 
 add_executable(denoise src/denoise.cpp)
 target_include_directories(denoise   PUBLIC ${catkin_INCLUDE_DIRS} src)
 target_link_libraries(denoise   PUBLIC ${catkin_LIBRARIES} )
 
+add_executable(circle_detection src/circle_detection.cpp)
+target_include_directories(circle_detection   PUBLIC ${catkin_INCLUDE_DIRS} src)
+target_link_libraries(circle_detection   PUBLIC ${catkin_LIBRARIES} )
+
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME}_driver ${PROJECT_NAME}_decoder  subscriber_node detection_node filtering_node  shape_detection  denoise_node  denoise
+install(TARGETS ${PROJECT_NAME}_driver ${PROJECT_NAME}_decoder  subscriber_node  detection_node  RANSAC_node  shape_detection  circle_detection   denoise
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -14,7 +14,6 @@ public:
         // Initialize ROS node and subscribe to the Lidar data
         ros::NodeHandle nh;
         lidar_sub = nh.subscribe("/front_scan", 1, &LidarProcessor::lidarCallback, this);
-        alert_pub = nh.advertise<std_msgs::Bool>("/lidar_alert", 1);
     }
 
     void lidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
@@ -67,12 +66,7 @@ public:
         if (!detected_objects.empty()) {
             for (const auto& obj : detected_objects) {
                 if (obj.max_intensity_distance < 0.4) {
-                    ROS_WARN("ALERT: Special Object is too close!");
-
-                    // Publish an alert message
-                    std_msgs::Bool alert_msg;
-                    alert_msg.data = true;
-                    alert_pub.publish(alert_msg);
+                    // Don't display any warning message when a special object is too close
                     break;  // Break out of the loop if any detected object is too close
                 }
             }
@@ -89,7 +83,6 @@ public:
 
 private:
     ros::Subscriber lidar_sub;
-    ros::Publisher alert_pub;
 };
 
 int main(int argc, char** argv) {

@@ -1,6 +1,6 @@
 <launch>
   <arg name="pkg" value="olelidar"/>
-  <arg name="device_ip" default="192.168.2.12"/>
+  <arg name="device_ip" default="192.168.1.122"/>
   <arg name="device_port" default="2368"/>
   <arg name="local_ip" default="192.168.2.198"/>
   <arg name="multiaddr" default="239.255.0.100"/>
