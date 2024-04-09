@@ -77,7 +77,7 @@ public:
 
     bool has_circular_arc_shape(const DetectedObject& obj, const std::vector<float>& ranges, float average_angle, float std_deviation) {
         // Check if both average angle and standard deviation are below 9 degrees
-        return (90 <= average_angle && average_angle <= 165) && (std_deviation < 20.0);
+        return (90 <= average_angle && average_angle <= 160) && (std_deviation < 10.0);
     }
 
     float getAverageAngle(const DetectedObject& obj, const std::vector<float>& ranges) {
