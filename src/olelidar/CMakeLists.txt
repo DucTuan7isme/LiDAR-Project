@@ -48,7 +48,6 @@ add_executable(shape_detection src/shape_detection.cpp)
 target_include_directories(shape_detection   PUBLIC ${catkin_INCLUDE_DIRS} src)
 target_link_libraries(shape_detection   PUBLIC ${catkin_LIBRARIES} )
 
-
 add_executable(denoise src/denoise.cpp)
 target_include_directories(denoise   PUBLIC ${catkin_INCLUDE_DIRS} src)
 target_link_libraries(denoise   PUBLIC ${catkin_LIBRARIES} )
@@ -57,8 +56,12 @@ add_executable(circle_detection src/circle_detection.cpp)
 target_include_directories(circle_detection   PUBLIC ${catkin_INCLUDE_DIRS} src)
 target_link_libraries(circle_detection   PUBLIC ${catkin_LIBRARIES} )
 
+add_executable(circle_regression src/circle_regression.cpp)
+target_include_directories(circle_regression   PUBLIC ${catkin_INCLUDE_DIRS} src)
+target_link_libraries(circle_regression   PUBLIC ${catkin_LIBRARIES} )
+
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME}_driver ${PROJECT_NAME}_decoder  subscriber_node  shape_detection  circle_detection   denoise
+install(TARGETS ${PROJECT_NAME}_driver ${PROJECT_NAME}_decoder  subscriber_node  shape_detection  circle_detection   denoise  circle_regression
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

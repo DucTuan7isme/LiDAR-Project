@@ -28,20 +28,19 @@ public:
         std::vector<DetectedObject> detected_objects;
 
         start_index = 0;
-        for (size_t i = start_index; i < intensities.size(); ++i) {
+        size_t i = start_index;
+        while (i < intensities.size()) {
             if (intensities[i] > 3000) {
                 size_t cluster_size = 1;
                 float max_intensity_value = intensities[i];
+                size_t j = i + 1;
 
-                for (size_t j = i + 1; j < intensities.size(); ++j) {
-                    if (intensities[j] > 3000) {
-                        cluster_size++;
-                        if (intensities[j] > max_intensity_value) {
-                            max_intensity_value = intensities[j];
-                        }
-                    } else {
-                        break;
+                while (j < intensities.size() && intensities[j] > 3000) {
+                    cluster_size++;
+                    if (intensities[j] > max_intensity_value) {
+                        max_intensity_value = intensities[j];
                     }
+                    j++;
                 }
 
                 if (cluster_size >= 5) {
@@ -54,8 +53,10 @@ public:
                     detected_objects.push_back(obj);
                 }
 
-                start_index = i + cluster_size;
-            
+                start_index = j; // Update start_index to the next cluster
+                i = start_index;
+            } else {
+                i++;
             }
         }
 
@@ -75,7 +76,7 @@ public:
         }
     }
 
-    bool has_circular_arc_shape(const DetectedObject& obj, const std::vector<float>& ranges, float average_angle, float std_deviation) {
+    bool has_circular_arc_shape(const DetectedObject& obj, const std::vector<float>& ranges, float average_angle, float std_deviation) {        
         // Check if both average angle and standard deviation are below 9 degrees
         return (90 <= average_angle && average_angle <= 160) && (std_deviation < 10.0);
     }
@@ -85,6 +86,7 @@ public:
         float sum_angles = 0.0;
         for (size_t i = obj.start_index + 1; i < obj.end_index; ++i) {
             float angle = calculateAngle(obj.start_index, i, obj.end_index, ranges);
+            ROS_INFO("Angle at index %zu: %.2f degrees", i, angle);
             sum_angles += angle;
         }
 

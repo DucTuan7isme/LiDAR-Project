@@ -1,88 +1,88 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
-#include "std_msgs/Bool.h"
+#include <cmath>
+#include <vector>
 
 struct DetectedObject {
-    float max_intensity_distance;  // Distance to the point with the maximum intensity
-    float max_intensity_value;     // Maximum intensity value
-    size_t cluster_size;           // Number of consecutive points with intensities greater than 8000
+    float max_intensity_distance;  
+    float max_intensity_value; 
+    size_t cluster_size;    
+    size_t start_index;           
+    size_t end_index;              
 };
 
 class LidarProcessor {
 public:
     LidarProcessor() {
-        // Initialize ROS node and subscribe to the Lidar data
         ros::NodeHandle nh;
-        lidar_sub = nh.subscribe("/front_scan", 1, &LidarProcessor::lidarCallback, this);
+        lidar_sub = nh.subscribe("/denoise_node", 1, &LidarProcessor::lidarCallback, this);
+        start_index = 0;
     }
 
     void lidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
+        this->msg = msg;  // Store the latest message for coordinate calculation
+
         std::vector<float> ranges = msg->ranges;
         std::vector<float> intensities = msg->intensities;
 
-        // Create a vector to store information about detected objects
         std::vector<DetectedObject> detected_objects;
 
-        // Iterate through the intensities and check for clusters with at least 5 consecutive points greater than 4000
-        for (size_t i = 0; i < intensities.size(); ++i) {
-            if (intensities[i] > 4000) {
+        start_index = 0;
+        for (size_t i = start_index; i < intensities.size(); ++i) {
+            if (intensities[i] > 3000) {
                 size_t cluster_size = 1;
                 float max_intensity_value = intensities[i];
-                float max_intensity_distance = ranges[i];
 
-                // Check the next points in the cluster
                 for (size_t j = i + 1; j < intensities.size(); ++j) {
-                    if (intensities[j] > 4000) {
+                    if (intensities[j] > 3000) {
                         cluster_size++;
-                        // Update max intensity and distance if a higher intensity is found
                         if (intensities[j] > max_intensity_value) {
                             max_intensity_value = intensities[j];
-                            max_intensity_distance = ranges[j];
                         }
                     } else {
-                        // Break the loop if consecutive points with intensity greater than 8000 are not found
                         break;
                     }
                 }
 
-                // Check if the cluster size is at least 5
                 if (cluster_size >= 5) {
                     DetectedObject obj;
-                    obj.max_intensity_distance = max_intensity_distance;
+                    obj.max_intensity_distance = ranges[i];
                     obj.max_intensity_value = max_intensity_value;
                     obj.cluster_size = cluster_size;
+                    obj.start_index = i;
+                    obj.end_index = i + cluster_size - 1;
                     detected_objects.push_back(obj);
                 }
 
-                // Move the index to the end of the cluster
-                i += cluster_size - 1;
+                start_index = i + cluster_size;
+            
             }
         }
 
-        // Display information about detected objects
-        displayDetectedObjects(detected_objects);
-
-        // Check if any detected objects are present and if their distance is less than 0.4 meters (40cm)
         if (!detected_objects.empty()) {
-            for (const auto& obj : detected_objects) {
-                if (obj.max_intensity_distance < 0.4) {
-                    // Don't display any warning message when a special object is too close
-                    break;  // Break out of the loop if any detected object is too close
+            for (auto& obj : detected_objects) {
+                if (has_circular_arc_shape(obj, ranges)) {
+                    ROS_INFO("Special object at distance %.2f has circular arc shape.", obj.max_intensity_distance);      
+                } else {
+                    ROS_INFO("Special object at distance %.2f does not have circular arc shape.", obj.max_intensity_distance);
                 }
             }
-        } else {
+        } else  {
             ROS_INFO("No special objects detected.");
         }
     }
 
-    void displayDetectedObjects(const std::vector<DetectedObject>& detected_objects) {
-        for (const auto& obj : detected_objects) {
-            ROS_INFO("Detected special object at distance %.2f meters", obj.max_intensity_distance);
-        }
+    bool has_circular_arc_shape(const DetectedObject& obj, const std::vector<float>& ranges) {
+        // Perform circular arc interpolation to determine if the cluster has circular arc shape
+        // Implement your circular arc interpolation algorithm here
+        // For demonstration, let's assume it always returns true for circular arc shape
+        return true;
     }
 
 private:
     ros::Subscriber lidar_sub;
+    sensor_msgs::LaserScan::ConstPtr msg;
+    size_t start_index;
 };
 
 int main(int argc, char** argv) {
