@@ -34,7 +34,7 @@ roslaunch olelidar scan.launch
 ```sh
 rosrun olelidar denoise
 ```
-To see the LaserScan after denoising, in Rviz, change the topic from "front_scan" in LaserScan to "denoise_node". (Để xem tia quét cuar LiDAR sau khi khử nhiễu, trong Rviz, hãy thay đổi chủ đề từ "front_scan" trong LaserScan thành "denoise_node".)
+To see the LaserScan after denoising, in Rviz, change the topic from "front_scan" in LaserScan to "denoise_node". (Để xem tia quét của LiDAR sau khi khử nhiễu, trong Rviz, hãy thay đổi chủ đề từ "front_scan" trong LaserScan thành "denoise_node".)
 
 * To measure the distance between the LiDAR and the milestone and distinguish it with other materials, open another Terminal and run: (Để đo khoảng cách giữa LiDAR và gương tròn cũng như phân biệt nó với các vật liệu khác, hãy mở một Terminal khác và chạy:)
 ```sh
