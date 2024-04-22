@@ -13,17 +13,18 @@ III. Repeat step I
 cd ~/catkin_ws && catkin_make
 ```
 
+
 ## Usage 
 
 * In the first Terminal, run: (Trong Terminal đầu tiên, chạy:)
 ```sh
 roscore
 ```
-* To start the scan of the LiDAR, open another Terminal: (Để bắt đầu quét LiDAR, mở một Terminal khác:)
+* To start the scan of the LiDAR, open another Terminal and Run: (Để bắt đầu quét LiDAR, mở một Terminal khác và chạy:)
 ```sh
 roslaunch olelidar scan.launch
 ```
-* To observe the scan in RViz, in other Terminal, open Rviz and Run file `test.rviz` in folder `rviz`: (Để quan sát quá trình quét trong RViz, trong Terminal khác, mở Rviz và chạy tệp `test.rviz` trong thư mục `rviz`)
+* To observe the scan in RViz, in other Terminal, open Rviz and Run file `test.rviz` in folder `rviz`: (Để quan sát quá trình quét trong RViz, trong Terminal khác, mở Rviz và chạy file `test.rviz` trong thư mục `rviz`)
 
 * To denoise the raw LaserScan of the LiDAR, open another Terminal and run: (Để khử nhiễu dữ liệu thô của LiDAR, mở một Terminal khác và chạy:)
 ```sh
