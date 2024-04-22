@@ -65,8 +65,8 @@ public:
         if (!detected_objects.empty()) {
             for (auto& obj : detected_objects) {
                 if (has_circular_arc_shape(obj, ranges, msg) && obj.radius < 0.1) {
-                    ROS_INFO("Special object at distance %.2f has circular arc shape with radius %.2f centimeters. Mean residual: %.4f", 
-                             obj.max_intensity_distance, obj.radius * 100, obj.mean_residual);      
+                    ROS_INFO("Special object at distance %.2f has circular arc shape with radius %.2f centimeters.", 
+                             obj.max_intensity_distance, obj.radius * 100);      
                 } else {
                     ROS_INFO("Special object does not have circular arc shape.");
                 }
