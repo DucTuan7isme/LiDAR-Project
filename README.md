@@ -1,14 +1,14 @@
 # OLEI LiDAR
 
-I. Build
+1. Build
 ``` sh
 cd ~/catkin_ws && catkin_make
 ```
-II. Clone `test_ws`
+2. Clone `test_ws`
 ```sh
 git clone https://github.com/DucTuan7isme/LiDAR-Project.git
 ```
-III. Repeat step I
+3. Repeat step 1
 ``` sh
 cd ~/catkin_ws && catkin_make
 ```
