@@ -10,7 +10,8 @@ struct DetectedObject {
     size_t cluster_size;    
     size_t start_index;           
     size_t end_index;   
-    float radius;        
+    float radius;    
+    float mean_residual;    
 };
 
 class LidarProcessor {
@@ -64,8 +65,8 @@ public:
         if (!detected_objects.empty()) {
             for (auto& obj : detected_objects) {
                 if (has_circular_arc_shape(obj, ranges, msg) && obj.radius < 0.1) {
-                    ROS_INFO("Special object at distance %.2f has circular arc shape with radius %.2f centimeters.", 
-                             obj.max_intensity_distance, obj.radius * 100);      
+                    ROS_INFO("Special object at distance %.2f has circular arc shape with radius %.2f centimeters. Mean residual: %.4f", 
+                             obj.max_intensity_distance, obj.radius * 100, obj.mean_residual);      
                 } else {
                     ROS_INFO("Special object does not have circular arc shape.");
                 }
@@ -88,13 +89,13 @@ public:
         }
 
         // Print the number of points in DetectedObject
-         // ROS_INFO("Number of points in DetectedObject: %zu", obj.cluster_size);
+        ROS_INFO("Number of points in DetectedObject: %zu", obj.cluster_size);
         
         // Print points
-        // ROS_INFO("Points:");
-         // for (const auto& point : points) {
-            // ROS_INFO("x: %.3f, y: %.3f", point.first, point.second);
-        // }
+        ROS_INFO("Points:");
+        for (const auto& point : points) {
+            ROS_INFO("x: %.3f, y: %.3f", point.first, point.second);
+        }
         
         // Fit circle to points
         Eigen::MatrixXd A(points.size(), 3);
@@ -105,7 +106,7 @@ public:
             A(i, 2) = 1;
             b(i) = points[i].first * points[i].first + points[i].second * points[i].second;
         }
-        Eigen::VectorXd center_radius = (A.transpose() * A).inverse() * A.transpose() * b;
+        Eigen::VectorXd center_radius = ( (A.transpose() * A).inverse() ) * A.transpose() * b;
         float x_center = center_radius(0) / 2;
         float y_center = center_radius(1) / 2;
         obj.radius = sqrt(x_center * x_center + y_center * y_center + center_radius(2)); 
@@ -137,7 +138,7 @@ private:
     sensor_msgs::LaserScan::ConstPtr msg;
     size_t start_index;
 
-    static constexpr float MAX_MEAN_RESIDUAL = 0.01; 
+    static constexpr float MAX_MEAN_RESIDUAL = 0.02; 
 };
 
 int main(int argc, char** argv) {
