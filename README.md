@@ -1,5 +1,9 @@
 # OLEI LiDAR
 
+IPv4 Manual:
+* Address: 192.168.1.99
+* Netmask: 255.255.255.0
+
 1. Build
 ``` sh
 cd ~/catkin_ws && catkin_make
