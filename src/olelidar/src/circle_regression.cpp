@@ -83,19 +83,19 @@ public:
             // Calculate x and y coordinates in the new coordinate system
             float angle = msg->angle_min + i * msg->angle_increment - M_PI; 
             float x = ranges[i] * sin(angle); 
-            float y = ranges[i] *  (-cos(angle)); 
+            float y = ranges[i] * (-cos(angle)); 
             // Store the coordinates in the points vector
             points.emplace_back(x, y);
         }
 
         // Print the number of points in DetectedObject
-        ROS_INFO("Number of points in DetectedObject: %zu", obj.cluster_size);
+        // ROS_INFO("Number of points in DetectedObject: %zu", obj.cluster_size);
         
         // Print points
-        ROS_INFO("Points:");
-        for (const auto& point : points) {
-            ROS_INFO("x: %.3f, y: %.3f", point.first, point.second);
-        }
+        // ROS_INFO("Points:");
+        // for (const auto& point : points) {
+        //     ROS_INFO("x: %.3f, y: %.3f", point.first, point.second);
+        // }
         
         // Fit circle to points
         Eigen::MatrixXd A(points.size(), 3);
