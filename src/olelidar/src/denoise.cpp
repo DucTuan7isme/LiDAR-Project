@@ -7,7 +7,7 @@
 
 class LidarDenoising {
 public:
-    LidarDenoising() : nh_("~"), num_scans_to_average_(4), k_(5), eps_(0.08) {
+    LidarDenoising() : nh_("~"), num_scans_to_average_(3), k_(5), eps_(0.08) {
         sub_ = nh_.subscribe("/front_scan", 1, &LidarDenoising::lidarCallback, this);
         pub_ = nh_.advertise<sensor_msgs::LaserScan>("/denoise_node", 1);
     }
